@@ -17,8 +17,6 @@ import com.abdullayevtural.blog_post.dto.CommentRequest;
 import com.abdullayevtural.blog_post.dto.CommentResponse;
 import com.abdullayevtural.blog_post.service.CommentService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-
 @RestController
 @RequestMapping("/api/posts")
 public class CommentController {
@@ -29,7 +27,8 @@ public class CommentController {
 	}
 
 	@PostMapping("/{postId}/comments")
-	public ResponseEntity<CommentResponse> addComment(@PathVariable Long postId, @RequestBody CommentRequest request,
+	public ResponseEntity<CommentResponse> addComment(@PathVariable Long postId,
+			@org.springframework.web.bind.annotation.RequestBody CommentRequest request,
 			Authentication authentication) {
 		String username = authentication.getName();
 		CommentResponse response = commentService.addComment(postId, request, username);
