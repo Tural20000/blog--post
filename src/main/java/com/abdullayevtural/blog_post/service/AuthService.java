@@ -3,6 +3,8 @@ package com.abdullayevtural.blog_post.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.abdullayevtural.blog_post.dto.AuthResponse;
+import com.abdullayevtural.blog_post.dto.LoginRequest;
 import com.abdullayevtural.blog_post.dto.RegisterRequest;
 import com.abdullayevtural.blog_post.entity.User;
 import com.abdullayevtural.blog_post.repository.UserRepository;
@@ -34,6 +36,16 @@ public class AuthService {
 
 		return "Istifadeci ugurla qeydiyatdan kecdi!";
 
+	}
+
+	public AuthResponse login(LoginRequest request) {
+		User user = userRepository.findByUsername(request.getUsername())
+				.orElseThrow(() -> new RuntimeException("Istifadeci adi ve ya sifre yanlisdir!"));
+		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+			throw new RuntimeException("Istifadeci adi ve ya sifre yanlisdir!");
+		}
+		String token = tokenProvider.generateToken(user.getUsername());
+		return new AuthResponse(token);
 	}
 
 }
