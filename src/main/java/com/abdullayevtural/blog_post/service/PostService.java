@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import com.abdullayevtural.blog_post.dto.PostRequest;
 import com.abdullayevtural.blog_post.dto.PostResponse;
 import com.abdullayevtural.blog_post.entity.Post;
+import com.abdullayevtural.blog_post.entity.ReactionType;
 import com.abdullayevtural.blog_post.entity.User;
+import com.abdullayevtural.blog_post.repository.LikeRepository;
 import com.abdullayevtural.blog_post.repository.PostRepository;
 import com.abdullayevtural.blog_post.repository.UserRepository;
 
@@ -17,11 +19,12 @@ import com.abdullayevtural.blog_post.repository.UserRepository;
 public class PostService {
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
+	private final LikeRepository likeRepository;
 
-	public PostService(PostRepository postRepository, UserRepository userRepository) {
+	public PostService(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository) {
 		this.postRepository = postRepository;
 		this.userRepository = userRepository;
-
+		this.likeRepository = likeRepository;
 	}
 
 	public PostResponse createPost(PostRequest request, String username) {
@@ -47,10 +50,11 @@ public class PostService {
 	}
 
 	private PostResponse mapToResponse(Post post) {
-		return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt(),
-				post.getUser().getUsername()
+		long likeCount = likeRepository.countByPostIdAndReactionType(post.getId(), ReactionType.LIKE);
+		long dislikeCount = likeRepository.countByPostIdAndReactionType(post.getId(), ReactionType.DISLIKE);
 
-		);
+		return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt(),
+				post.getUser().getUsername(), likeCount, dislikeCount);
 	}
 
 	public void deletePost(Long id, String username) {
@@ -58,7 +62,6 @@ public class PostService {
 
 		if (!post.getUser().getUsername().equals(username)) {
 			throw new RuntimeException("Sizin bu postu silmek selahiyetiniz yoxdur!");
-
 		}
 		postRepository.delete(post);
 	}
@@ -67,14 +70,11 @@ public class PostService {
 		Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post tapilmadi, ID: " + id));
 		if (!post.getUser().getUsername().equals(username)) {
 			throw new RuntimeException("Sizin bu postu yenilemek selahiyetiniz yoxdur!");
-
 		}
 		post.setTitle(request.getTitle());
 		post.setContent(request.getContent());
 
 		Post updatedPost = postRepository.save(post);
 		return mapToResponse(updatedPost);
-
 	}
-
 }
