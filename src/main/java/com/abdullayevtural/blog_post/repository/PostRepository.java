@@ -1,5 +1,6 @@
 package com.abdullayevtural.blog_post.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,5 +11,7 @@ import com.abdullayevtural.blog_post.entity.Post;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 	List<Post> findByUserId(Long id);
+
+	List<Post> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
 
 }

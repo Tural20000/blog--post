@@ -6,8 +6,11 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.abdullayevtural.blog_post.dto.PostReportResponse;
 import com.abdullayevtural.blog_post.dto.PostRequest;
 import com.abdullayevtural.blog_post.dto.PostResponse;
+import com.abdullayevtural.blog_post.dto.ReactionUserResponse;
+import com.abdullayevtural.blog_post.entity.Like;
 import com.abdullayevtural.blog_post.entity.Post;
 import com.abdullayevtural.blog_post.entity.ReactionType;
 import com.abdullayevtural.blog_post.entity.User;
@@ -76,5 +79,29 @@ public class PostService {
 
 		Post updatedPost = postRepository.save(post);
 		return mapToResponse(updatedPost);
+	}
+
+	public List<PostReportResponse> getPostReportsByDateRange(String username, LocalDateTime startDate,
+			LocalDateTime endDate) {
+
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new RuntimeException("İstifadəçi tapılmadı: " + username));
+
+		List<Post> posts = postRepository.findByUserIdAndCreatedAtBetween(user.getId(), startDate, endDate);
+
+		return posts.stream().map(post -> {
+
+			List<Like> likes = likeRepository.findByPostId(post.getId());
+
+			long likeCount = likes.stream().filter(l -> l.getReactionType() == ReactionType.LIKE).count();
+			long dislikeCount = likes.stream().filter(l -> l.getReactionType() == ReactionType.DISLIKE).count();
+
+			List<ReactionUserResponse> reactionUsers = likes.stream()
+					.map(l -> new ReactionUserResponse(l.getUser().getUsername(), l.getReactionType()))
+					.collect(Collectors.toList());
+
+			return new PostReportResponse(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt(),
+					likeCount, dislikeCount, reactionUsers);
+		}).collect(Collectors.toList());
 	}
 }

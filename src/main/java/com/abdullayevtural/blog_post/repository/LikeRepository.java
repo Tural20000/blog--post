@@ -1,5 +1,6 @@
 package com.abdullayevtural.blog_post.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,5 +18,7 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 	long countByPostIdAndReactionType(Long postId, ReactionType reactionType);
 
 	long countByCommentIdAndReactionType(Long commentId, ReactionType reactionType);
+
+	List<Like> findByPostId(Long postId);
 
 }
