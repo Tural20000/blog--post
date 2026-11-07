@@ -25,14 +25,16 @@ public class PostService {
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
 	private final LikeRepository likeRepository;
-	private final FileStorageService fileStorageService; // YENİ ƏLAVƏ OLUNDU
+	private final FileStorageService fileStorageService;
+	private final AiSummaryService aiSummaryService;
 
 	public PostService(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository,
-			FileStorageService fileStorageService) {
+			FileStorageService fileStorageService, AiSummaryService aiSummaryService) {
 		this.postRepository = postRepository;
 		this.userRepository = userRepository;
 		this.likeRepository = likeRepository;
 		this.fileStorageService = fileStorageService;
+		this.aiSummaryService = aiSummaryService;
 	}
 
 	public PostResponse createPost(PostRequest request, String username) {
@@ -43,6 +45,9 @@ public class PostService {
 		post.setContent(request.getContent());
 		post.setCreatedAt(LocalDateTime.now());
 		post.setUser(user);
+
+		String summary = aiSummaryService.generateSummary(request.getContent());
+		post.setAiSummary(summary);
 
 		Post savedPost = postRepository.save(post);
 		return mapToResponse(savedPost);
@@ -57,6 +62,9 @@ public class PostService {
 		post.setContent(content);
 		post.setCreatedAt(LocalDateTime.now());
 		post.setUser(user);
+
+		String summary = aiSummaryService.generateSummary(content);
+		post.setAiSummary(summary);
 
 		if (file != null && !file.isEmpty()) {
 			String fileName = fileStorageService.storeFile(file);
@@ -81,7 +89,7 @@ public class PostService {
 		long dislikeCount = likeRepository.countByPostIdAndReactionType(post.getId(), ReactionType.DISLIKE);
 
 		return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt(),
-				post.getUser().getUsername(), likeCount, dislikeCount, post.getImageUrl());
+				post.getUser().getUsername(), likeCount, dislikeCount, post.getImageUrl(), post.getAiSummary());
 	}
 
 	public void deletePost(Long id, String username) {
@@ -108,6 +116,9 @@ public class PostService {
 		post.setTitle(request.getTitle());
 		post.setContent(request.getContent());
 
+		String summary = aiSummaryService.generateSummary(request.getContent());
+		post.setAiSummary(summary);
+
 		Post updatedPost = postRepository.save(post);
 		return mapToResponse(updatedPost);
 	}
@@ -132,7 +143,7 @@ public class PostService {
 					.collect(Collectors.toList());
 
 			return new PostReportResponse(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt(),
-					likeCount, dislikeCount, reactionUsers, post.getImageUrl());
+					likeCount, dislikeCount, reactionUsers, post.getImageUrl(), post.getAiSummary());
 		}).collect(Collectors.toList());
 	}
 

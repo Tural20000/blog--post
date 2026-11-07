@@ -24,28 +24,32 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Post {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	@Column(nullable = false)
 	private String title;
+
 	@Column(nullable = false, columnDefinition = "TEXT")
 	private String content;
+
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
 
 	private String imageUrl;
 
+	@Column(columnDefinition = "TEXT")
+	private String aiSummary;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
-
 	private User user;
+
 	@OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<Comment> comments = new ArrayList<>();
 
 	@OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<Like> likes = new ArrayList<>();
-
 }

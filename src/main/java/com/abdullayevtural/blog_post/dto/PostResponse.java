@@ -19,4 +19,5 @@ public class PostResponse {
 	private long likeCount;
 	private long dislikeCount;
 	private String imageUrl;
+	private String aiSummary;
 }
