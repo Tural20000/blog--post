@@ -49,6 +49,9 @@ public class PostService {
 		String summary = aiSummaryService.generateSummary(request.getContent());
 		post.setAiSummary(summary);
 
+		String tags = aiSummaryService.generateTags(request.getContent(), request.getTitle());
+		post.setTags(tags);
+
 		Post savedPost = postRepository.save(post);
 		return mapToResponse(savedPost);
 	}
@@ -65,6 +68,9 @@ public class PostService {
 
 		String summary = aiSummaryService.generateSummary(content);
 		post.setAiSummary(summary);
+
+		String tags = aiSummaryService.generateTags(content, title);
+		post.setTags(tags);
 
 		if (file != null && !file.isEmpty()) {
 			String fileName = fileStorageService.storeFile(file);
@@ -89,7 +95,8 @@ public class PostService {
 		long dislikeCount = likeRepository.countByPostIdAndReactionType(post.getId(), ReactionType.DISLIKE);
 
 		return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt(),
-				post.getUser().getUsername(), likeCount, dislikeCount, post.getImageUrl(), post.getAiSummary());
+				post.getUser().getUsername(), likeCount, dislikeCount, post.getImageUrl(), post.getAiSummary(),
+				post.getTags());
 	}
 
 	public void deletePost(Long id, String username) {
@@ -119,6 +126,9 @@ public class PostService {
 		String summary = aiSummaryService.generateSummary(request.getContent());
 		post.setAiSummary(summary);
 
+		String tags = aiSummaryService.generateTags(request.getContent(), request.getTitle());
+		post.setTags(tags);
+
 		Post updatedPost = postRepository.save(post);
 		return mapToResponse(updatedPost);
 	}
@@ -143,7 +153,7 @@ public class PostService {
 					.collect(Collectors.toList());
 
 			return new PostReportResponse(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt(),
-					likeCount, dislikeCount, reactionUsers, post.getImageUrl(), post.getAiSummary());
+					likeCount, dislikeCount, reactionUsers, post.getImageUrl(), post.getAiSummary(), post.getTags());
 		}).collect(Collectors.toList());
 	}
 

@@ -33,4 +33,32 @@ public class AiSummaryService {
 			return content;
 		}
 	}
+
+	public String generateTags(String content, String title) {
+		if (content == null) {
+			return "General";
+		}
+
+		String combined = (title + " " + content).toLowerCase();
+		StringBuilder tags = new StringBuilder();
+
+		if (combined.contains("java") || combined.contains("spring") || combined.contains("backend")) {
+			tags.append("#Java #SpringBoot ");
+		}
+		if (combined.contains("history") || combined.contains("boston") || combined.contains("revolution")) {
+			tags.append("#History #Travel ");
+		}
+		if (combined.contains("database") || combined.contains("sql") || combined.contains("mysql")) {
+			tags.append("#Database #SQL ");
+		}
+		if (combined.contains("ai") || combined.contains("artificial") || combined.contains("smart")) {
+			tags.append("#AI #Technology ");
+		}
+
+		if (tags.length() == 0) {
+			tags.append("#Blog #General");
+		}
+
+		return tags.toString().trim();
+	}
 }

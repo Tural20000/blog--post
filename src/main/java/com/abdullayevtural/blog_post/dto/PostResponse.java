@@ -20,4 +20,5 @@ public class PostResponse {
 	private long dislikeCount;
 	private String imageUrl;
 	private String aiSummary;
+	private String tags;
 }

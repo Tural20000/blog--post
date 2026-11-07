@@ -21,5 +21,5 @@ public class PostReportResponse {
 	private List<ReactionUserResponse> reactions;
 	private String imageUrl;
 	private String aiSummary;
-
+	private String tags;
 }
