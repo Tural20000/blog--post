@@ -13,6 +13,7 @@ import com.abdullayevtural.blog_post.dto.ReactionUserResponse;
 import com.abdullayevtural.blog_post.entity.Like;
 import com.abdullayevtural.blog_post.entity.Post;
 import com.abdullayevtural.blog_post.entity.ReactionType;
+import com.abdullayevtural.blog_post.entity.Role;
 import com.abdullayevtural.blog_post.entity.User;
 import com.abdullayevtural.blog_post.repository.LikeRepository;
 import com.abdullayevtural.blog_post.repository.PostRepository;
@@ -63,9 +64,16 @@ public class PostService {
 	public void deletePost(Long id, String username) {
 		Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post tapilmadi, ID: " + id));
 
-		if (!post.getUser().getUsername().equals(username)) {
+		User currentUser = userRepository.findByUsername(username)
+				.orElseThrow(() -> new RuntimeException("Istifadeci tapilmadi: " + username));
+
+		boolean isOwner = post.getUser().getUsername().equals(username);
+		boolean isAdmin = currentUser.getRole() == Role.ADMIN;
+
+		if (!isOwner && !isAdmin) {
 			throw new RuntimeException("Sizin bu postu silmek selahiyetiniz yoxdur!");
 		}
+
 		postRepository.delete(post);
 	}
 

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.abdullayevtural.blog_post.dto.AuthResponse;
 import com.abdullayevtural.blog_post.dto.LoginRequest;
 import com.abdullayevtural.blog_post.dto.RegisterRequest;
+import com.abdullayevtural.blog_post.entity.Role;
 import com.abdullayevtural.blog_post.entity.User;
 import com.abdullayevtural.blog_post.repository.UserRepository;
 import com.abdullayevtural.blog_post.security.JwtTokenProvider;
@@ -25,17 +26,17 @@ public class AuthService {
 	public String register(RegisterRequest request) {
 		if (userRepository.findByUsername(request.getUsername()).isPresent()) {
 			throw new RuntimeException("Bu istifadeci adi artiq movcudddur!");
-
 		}
+
 		User user = new User();
 		user.setUsername(request.getUsername());
-
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+		user.setRole(Role.USER);
 
 		userRepository.save(user);
 
-		return "Istifadeci ugurla qeydiyatdan kecdi!";
-
+		return "Istifadeci ugurla qeydiyyatdan kecdi!";
 	}
 
 	public AuthResponse login(LoginRequest request) {
