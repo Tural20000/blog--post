@@ -46,9 +46,10 @@ public class CommentController {
 		Page<CommentResponse> comments = commentService.getCommentsByPostId(postId, pageable);
 		return ResponseEntity.ok(comments);
 	}
-
 	@DeleteMapping("/comments/{commentId}")
-	public ResponseEntity<String> deleteComment(@PathVariable Long commentId, Authentication authentication) {
+	public ResponseEntity<String> deleteComment(
+			@PathVariable Long commentId,
+			Authentication authentication){
 		String username = authentication.getName();
 		commentService.deleteComment(commentId, username);
 		return ResponseEntity.ok("Komment ugurla silindi!");
