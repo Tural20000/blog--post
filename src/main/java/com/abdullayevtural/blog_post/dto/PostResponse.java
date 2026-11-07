@@ -18,4 +18,5 @@ public class PostResponse {
 	private String authorUsername;
 	private long likeCount;
 	private long dislikeCount;
+	private String imageUrl;
 }

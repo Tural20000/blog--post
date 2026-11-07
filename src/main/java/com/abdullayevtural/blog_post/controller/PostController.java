@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.abdullayevtural.blog_post.dto.PostReportResponse;
 import com.abdullayevtural.blog_post.dto.PostRequest;
@@ -30,23 +32,22 @@ public class PostController {
 		this.postService = postService;
 	}
 
-	@PostMapping
-	public ResponseEntity<PostResponse> createPost(@RequestBody PostRequest request, Authentication authentication) {
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<PostResponse> createPost(@RequestParam("title") String title,
+			@RequestParam("content") String content, @RequestParam(value = "file", required = false) MultipartFile file,
+			Authentication authentication) {
 		String username = authentication.getName();
-		return ResponseEntity.ok(postService.createPost(request, username));
-
+		return ResponseEntity.ok(postService.createPostWithImage(title, content, file, username));
 	}
 
 	@GetMapping
 	public ResponseEntity<List<PostResponse>> getAllPosts() {
 		return ResponseEntity.ok(postService.getAllPost());
-
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<PostResponse> getPostById(@PathVariable Long id) {
 		return ResponseEntity.ok(postService.getPostById(id));
-
 	}
 
 	@PutMapping("/{id}")
@@ -54,7 +55,6 @@ public class PostController {
 			Authentication authentication) {
 		String username = authentication.getName();
 		return ResponseEntity.ok(postService.updatePost(id, request, username));
-
 	}
 
 	@DeleteMapping("/{id}")
@@ -62,7 +62,6 @@ public class PostController {
 		String username = authentication.getName();
 		postService.deletePost(id, username);
 		return ResponseEntity.ok("Post ugurla silindi!");
-
 	}
 
 	@GetMapping("/reports")
@@ -74,5 +73,4 @@ public class PostController {
 		List<PostReportResponse> reports = postService.getPostReportsByDateRange(username, startDate, endDate);
 		return ResponseEntity.ok(reports);
 	}
-
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.abdullayevtural.blog_post.dto.PostReportResponse;
 import com.abdullayevtural.blog_post.dto.PostRequest;
@@ -24,11 +25,14 @@ public class PostService {
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
 	private final LikeRepository likeRepository;
+	private final FileStorageService fileStorageService; // YENİ ƏLAVƏ OLUNDU
 
-	public PostService(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository) {
+	public PostService(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository,
+			FileStorageService fileStorageService) {
 		this.postRepository = postRepository;
 		this.userRepository = userRepository;
 		this.likeRepository = likeRepository;
+		this.fileStorageService = fileStorageService;
 	}
 
 	public PostResponse createPost(PostRequest request, String username) {
@@ -39,6 +43,25 @@ public class PostService {
 		post.setContent(request.getContent());
 		post.setCreatedAt(LocalDateTime.now());
 		post.setUser(user);
+
+		Post savedPost = postRepository.save(post);
+		return mapToResponse(savedPost);
+	}
+
+	public PostResponse createPostWithImage(String title, String content, MultipartFile file, String username) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new RuntimeException("Istifadeci tapilmadi: " + username));
+
+		Post post = new Post();
+		post.setTitle(title);
+		post.setContent(content);
+		post.setCreatedAt(LocalDateTime.now());
+		post.setUser(user);
+
+		if (file != null && !file.isEmpty()) {
+			String fileName = fileStorageService.storeFile(file);
+			post.setImageUrl("/uploads/" + fileName);
+		}
 
 		Post savedPost = postRepository.save(post);
 		return mapToResponse(savedPost);
@@ -58,7 +81,7 @@ public class PostService {
 		long dislikeCount = likeRepository.countByPostIdAndReactionType(post.getId(), ReactionType.DISLIKE);
 
 		return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt(),
-				post.getUser().getUsername(), likeCount, dislikeCount);
+				post.getUser().getUsername(), likeCount, dislikeCount, post.getImageUrl());
 	}
 
 	public void deletePost(Long id, String username) {
@@ -109,7 +132,7 @@ public class PostService {
 					.collect(Collectors.toList());
 
 			return new PostReportResponse(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt(),
-					likeCount, dislikeCount, reactionUsers);
+					likeCount, dislikeCount, reactionUsers, post.getImageUrl());
 		}).collect(Collectors.toList());
 	}
 }

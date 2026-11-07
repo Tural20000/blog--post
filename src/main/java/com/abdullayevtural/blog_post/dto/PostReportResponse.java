@@ -19,5 +19,6 @@ public class PostReportResponse {
 	private long likeCount;
 	private long dislikeCount;
 	private List<ReactionUserResponse> reactions;
+	private String imageUrl;
 
 }
