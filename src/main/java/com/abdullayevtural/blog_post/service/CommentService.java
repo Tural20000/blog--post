@@ -61,4 +61,13 @@ public class CommentService {
 		Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
 		return commentPage.map(this::mapToResponse);
 	}
+
+	public void deleteComment(Long commentId, String username) {
+		Comment comment = commentRepository.findById(commentId)
+				.orElseThrow(() -> new RuntimeException("Komment tapilmadi, ID: " + commentId));
+		if (!comment.getUser().getUsername().equals(username)) {
+			throw new RuntimeException("Sizin bu kommenti silmeye selahiyetiniz yoxdur!");
+		}
+		commentRepository.delete(comment);
+	}
 }
