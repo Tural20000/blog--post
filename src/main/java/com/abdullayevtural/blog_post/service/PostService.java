@@ -135,4 +135,10 @@ public class PostService {
 					likeCount, dislikeCount, reactionUsers, post.getImageUrl());
 		}).collect(Collectors.toList());
 	}
+
+	public List<PostResponse> searchPosts(String keyword) {
+		List<Post> posts = postRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(keyword,
+				keyword);
+		return posts.stream().map(this::mapToResponse).collect(Collectors.toList());
+	}
 }

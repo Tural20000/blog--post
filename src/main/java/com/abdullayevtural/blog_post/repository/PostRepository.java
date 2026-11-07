@@ -14,4 +14,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 	List<Post> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
 
+	List<Post> findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(String titleKeyword, String contentKeyword);
+
 }

@@ -40,6 +40,12 @@ public class PostController {
 		return ResponseEntity.ok(postService.createPostWithImage(title, content, file, username));
 	}
 
+	@GetMapping("/search")
+	public ResponseEntity<List<PostResponse>> searchPosts(@RequestParam String keyword) {
+		List<PostResponse> posts = postService.searchPosts(keyword);
+		return ResponseEntity.ok(posts);
+	}
+
 	@GetMapping
 	public ResponseEntity<List<PostResponse>> getAllPosts() {
 		return ResponseEntity.ok(postService.getAllPost());
