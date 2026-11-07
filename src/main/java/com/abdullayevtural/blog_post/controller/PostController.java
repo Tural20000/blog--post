@@ -1,7 +1,9 @@
 package com.abdullayevtural.blog_post.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,8 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.abdullayevtural.blog_post.dto.PostReportResponse;
 import com.abdullayevtural.blog_post.dto.PostRequest;
 import com.abdullayevtural.blog_post.dto.PostResponse;
 import com.abdullayevtural.blog_post.service.PostService;
@@ -59,6 +63,16 @@ public class PostController {
 		postService.deletePost(id, username);
 		return ResponseEntity.ok("Post ugurla silindi!");
 
+	}
+
+	@GetMapping("/reports")
+	public ResponseEntity<List<PostReportResponse>> getPostReports(
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+			Authentication authentication) {
+		String username = authentication.getName();
+		List<PostReportResponse> reports = postService.getPostReportsByDateRange(username, startDate, endDate);
+		return ResponseEntity.ok(reports);
 	}
 
 }
