@@ -11,6 +11,7 @@ import com.abdullayevtural.blog_post.dto.CommentResponse;
 import com.abdullayevtural.blog_post.entity.Comment;
 import com.abdullayevtural.blog_post.entity.Post;
 import com.abdullayevtural.blog_post.entity.ReactionType;
+import com.abdullayevtural.blog_post.entity.Role;
 import com.abdullayevtural.blog_post.entity.User;
 import com.abdullayevtural.blog_post.repository.CommentRepository;
 import com.abdullayevtural.blog_post.repository.LikeRepository;
@@ -65,9 +66,19 @@ public class CommentService {
 	public void deleteComment(Long commentId, String username) {
 		Comment comment = commentRepository.findById(commentId)
 				.orElseThrow(() -> new RuntimeException("Komment tapilmadi, ID: " + commentId));
-		if (!comment.getUser().getUsername().equals(username)) {
+
+		User currentUser = userRepository.findByUsername(username)
+				.orElseThrow(() -> new RuntimeException("Istifadeci tapilmadi: " + username));
+
+		boolean isCommentAuthor = comment.getUser().getUsername().equals(username);
+		boolean isPostOwner = comment.getPost().getUser().getUsername().equals(username);
+
+		boolean isAdmin = currentUser.getRole() == Role.ADMIN;
+
+		if (!isCommentAuthor && !isPostOwner && !isAdmin) {
 			throw new RuntimeException("Sizin bu kommenti silmeye selahiyetiniz yoxdur!");
 		}
+
 		commentRepository.delete(comment);
 	}
 }
