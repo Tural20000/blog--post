@@ -34,6 +34,21 @@ public class AiSummaryService {
 		}
 	}
 
+	public boolean isContentClean(String content) {
+		if (content == null || content.trim().isEmpty()) {
+			return false;
+		}
+
+		String lowerContent = content.toLowerCase();
+		String[] bannedWords = { "spam", "təhqir", "pis söz", "hack", "badword" };
+		for (String word : bannedWords) {
+			if (lowerContent.contains(word)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public String generateTags(String content, String title) {
 		if (content == null) {
 			return "General";

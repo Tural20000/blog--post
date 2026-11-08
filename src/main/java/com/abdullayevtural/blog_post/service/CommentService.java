@@ -24,20 +24,30 @@ public class CommentService {
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
 	private final LikeRepository likeRepository;
+	private final AiSummaryService aiSummaryService;
 
 	public CommentService(CommentRepository commentRepository, PostRepository postRepository,
-			UserRepository userRepository, LikeRepository likeRepository) {
+			UserRepository userRepository, LikeRepository likeRepository, AiSummaryService aiSummaryService) {
 		this.commentRepository = commentRepository;
 		this.postRepository = postRepository;
 		this.userRepository = userRepository;
 		this.likeRepository = likeRepository;
+		this.aiSummaryService = aiSummaryService;
 	}
 
 	public CommentResponse addComment(Long postId, CommentRequest request, String username) {
 		Post post = postRepository.findById(postId)
 				.orElseThrow(() -> new RuntimeException("Komment yazilacaq post tapilmadi, ID: " + postId));
+
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new RuntimeException("Istifadeci tapilmadi: " + username));
+
+		boolean isClean = aiSummaryService.isContentClean(request.getContent());
+		if (!isClean) {
+			throw new RuntimeException(
+					"AI Moderasiya Xətası: Kommentiniz qadağan olunmuş və ya təhqiramiz ifadələr ehtiva edir!");
+		}
+
 		Comment comment = new Comment();
 		comment.setContent(request.getContent());
 		comment.setCreatedAt(LocalDateTime.now());
