@@ -52,6 +52,9 @@ public class PostService {
 		String tags = aiSummaryService.generateTags(request.getContent(), request.getTitle());
 		post.setTags(tags);
 
+		String seoDesc = aiSummaryService.generateSeoDescription(request.getContent(), request.getTitle());
+		post.setSeoDescription(seoDesc);
+
 		Post savedPost = postRepository.save(post);
 		return mapToResponse(savedPost);
 	}
@@ -71,6 +74,9 @@ public class PostService {
 
 		String tags = aiSummaryService.generateTags(content, title);
 		post.setTags(tags);
+
+		String seoDesc = aiSummaryService.generateSeoDescription(content, title);
+		post.setSeoDescription(seoDesc);
 
 		if (file != null && !file.isEmpty()) {
 			String fileName = fileStorageService.storeFile(file);
@@ -96,7 +102,7 @@ public class PostService {
 
 		return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt(),
 				post.getUser().getUsername(), likeCount, dislikeCount, post.getImageUrl(), post.getAiSummary(),
-				post.getTags());
+				post.getTags(), post.getSeoDescription());
 	}
 
 	public void deletePost(Long id, String username) {
@@ -129,6 +135,9 @@ public class PostService {
 		String tags = aiSummaryService.generateTags(request.getContent(), request.getTitle());
 		post.setTags(tags);
 
+		String seoDesc = aiSummaryService.generateSeoDescription(request.getContent(), request.getTitle());
+		post.setSeoDescription(seoDesc);
+
 		Post updatedPost = postRepository.save(post);
 		return mapToResponse(updatedPost);
 	}
@@ -153,7 +162,8 @@ public class PostService {
 					.collect(Collectors.toList());
 
 			return new PostReportResponse(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt(),
-					likeCount, dislikeCount, reactionUsers, post.getImageUrl(), post.getAiSummary(), post.getTags());
+					likeCount, dislikeCount, reactionUsers, post.getImageUrl(), post.getAiSummary(), post.getTags(),
+					post.getSeoDescription());
 		}).collect(Collectors.toList());
 	}
 

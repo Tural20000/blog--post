@@ -38,6 +38,8 @@ public class Post {
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
 
+	private String seoDescription;
+
 	private String imageUrl;
 
 	@Column(columnDefinition = "TEXT")

@@ -49,6 +49,19 @@ public class AiSummaryService {
 		return true;
 	}
 
+	public String generateSeoDescription(String content, String title) {
+		if (content == null || content.trim().isEmpty()) {
+			return title;
+		}
+
+		String cleanContent = content.replaceAll("\\s+", " ").trim();
+		if (cleanContent.length() > 140) {
+			cleanContent = cleanContent.substring(0, 140) + "...";
+		}
+
+		return "Read about " + title + " - " + cleanContent;
+	}
+
 	public String generateTags(String content, String title) {
 		if (content == null) {
 			return "General";

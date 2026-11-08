@@ -21,4 +21,5 @@ public class PostResponse {
 	private String imageUrl;
 	private String aiSummary;
 	private String tags;
+	private String seoDescription;
 }
