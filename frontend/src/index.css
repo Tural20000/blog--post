@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+  --color-ink: #1c1917;
+  --color-paper: #f7f3ee;
+  --color-mist: #ebe4d8;
+  --color-clay: #c45c26;
+  --color-clay-dark: #9a4519;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.dark body,
+.dark {
+  background: #121110;
+  color: #f4efe8;
+}
+
+::selection {
+  background: #c45c26;
+  color: white;
+}
