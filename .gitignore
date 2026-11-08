@@ -35,3 +35,17 @@ build/
 ### Node / Frontend ###
 frontend/node_modules/
 frontend/dist/
+
+# H2 Database faylları
+/data/
+
+# İstifadəçi tərəfindən yüklənən şəkillər
+/uploads/
+
+# IDE və digər sistem faylları
+.idea/
+.vscode/
+*.log
+target/
+dist/
+node_modules/
